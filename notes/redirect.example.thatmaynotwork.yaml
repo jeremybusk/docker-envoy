@@ -1,0 +1,42 @@
+ address:
+      socket_address: { address: "::", ipv4_compat: true, port_value: 443 }
+    listener_filters:
+    - name: envoy.listener.tls_inspector
+      config: {}
+    filter_chains:
+    - filter_chain_match:
+        transport_protocol: raw_buffer
+      filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          codec_type: auto
+          route_config:
+            name: local_redirect
+            virtual_hosts:
+            - name: local_http
+              domains: ["*"]
+              routes:
+              - match: { prefix: "/" }
+                redirect: { https_redirect: true }
+          http_filters:
+          - name: envoy.router
+            config: {}
+    - filter_chain_match:
+        transport_protocol: tls
+      filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          codec_type: auto
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_path
+              domains: ["*"]
+              routes:
+              - match: { path: "/" }
+                redirect: { path_redirect: "/welcome.html"}
+          http_filters:
+          - name: envoy.router
+            config: {}

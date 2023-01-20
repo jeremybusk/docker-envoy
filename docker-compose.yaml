@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  envoy:
+    # image: envoyproxy/envoy:v1.23-latest
+    image: envoyproxy/envoy:v1.25-latest
+    # image: envoyproxy/envoy-dev:latest
+    container_name: envoy
+    user: root
+    ports:
+      - "10000:10000"
+    command: "envoy -c /etc/envoy/envoy.yaml --log-level trace"
+    # command: -c "envoy -c /etc/envoy/envoy.yaml --log-level trace"
+    # command: -c "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml --log-level trace"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
